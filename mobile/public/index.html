@@ -455,8 +455,13 @@ document.querySelectorAll('.ssize-presets button').forEach(b=>{
 document.getElementById('sreset').addEventListener('click',resetDefaults);
 document.getElementById('bShare').addEventListener('click',function(){
   try{
-    if(window.Capacitor?.Plugins?.ApkShare?.share){
-      window.Capacitor.Plugins.ApkShare.share();
+    if(window.Capacitor?.Plugins?.Share){
+      window.Capacitor.Plugins.Share.share({
+        title:'Lobo Recoge Huevos',
+        text:t('shareText')+' https://github.com/Mikidrag1957/Lobo-Recoge-Huevos/releases/download/v1.0.0/LoboRecogeHuevos.apk',
+        url:'https://github.com/Mikidrag1957/Lobo-Recoge-Huevos/releases/download/v1.0.0/LoboRecogeHuevos.apk',
+        dialogTitle:t('share')
+      });
     }
   }catch(e){}
 });
