@@ -929,7 +929,8 @@ function update(dt){
     for(let i=monsters.length-1;i>=0;i--){
       const m=monsters[i];
       m.y+=m.vy*dt;
-      if(Math.abs(m.x-wolf.x)<12&&Math.abs(m.y-wolf.y)<12){
+      const wdy=wolf.ty-wolf.y;
+      if(Math.abs(m.x-wolf.x)<12&&Math.abs(m.y-wolf.y)<12&&wolf.y<m.y-4&&wdy>0){
         addMsg(m.x,m.y-10,'+50',PAL.neonG);addSpark(m.x,m.y,true);sc+=50;if(sc>hi)hi=sc;upHUD();beep(990,.08,.5,'square');
         monsters.splice(i,1);continue;
       }
