@@ -219,6 +219,7 @@ const LANG={es:{},sk:{}};
   o.pauseTxt='PAUSA';o.pauseHint='P / ESC para continuar';
   o.doubleEnd='\u00a1NORMAL!';o.levelUp='\u00a1NIVEL';o.miss='\u00a1FALLASTE!';
   o.doubleMode='\u00a1DOBLE!';o.lifeLost='\u00a1PERDISTE UNA VIDA!';o.velShort='VEL';o.pts='Pts:';o.lvlShort='Lvl:';
+  o.weapon='\u00a1ARMA DESBLOQUEADA!';o.monsterHit='+50';o.monsterMiss='-75';
   o.lang='Idioma';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='COMPARTIR APP';o.shareText='\u00a1Prueba Lobo Recoge Huevos! Un divertido juego de recoger huevos.';
 });
 ['es','sk'].forEach(l=>{
@@ -245,6 +246,7 @@ const LANG={es:{},sk:{}};
     o.pauseTxt='PAUZA';o.pauseHint='P / ESC pre pokra\u010dovanie';
     o.doubleEnd='NORM\u00c1LNE!';o.levelUp='\u00daROVE\u0147';o.miss='TRUFE!';
     o.doubleMode='DVOJIT\u00c9!';o.lifeLost='STRATEN\u00dd \u017dIVOT!';o.velShort='R\u00ddCH';o.pts='Body:';o.lvlShort='\u00dar:';
+    o.weapon='ZBRAŇ ODOMKNUTÁ!';o.monsterHit='+50';o.monsterMiss='-75';
     o.lang='Jazyk';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='ZDIE\u013dAŤ APP';o.shareText='Vyskú\u0161aj Vlk zbiera vajcia! Zábavná hra na zbieranie vajec.';
   }
 });
@@ -262,9 +264,9 @@ function applyLang(){
   document.getElementById('s-save-name').placeholder=t('yourName');
 }
 let state='title',sc=0,hi=0,lives=3,broken=0,consecutiveBroken=0,lvl=1;
-let eggs=[],sparks=[],msgs=[],flames=[];
+let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
-let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0;
+let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
 let blinkT=0,blinkOn=true,gameT=0;
@@ -595,6 +597,7 @@ document.addEventListener('keydown',e=>{
   if(e.key===' '&&(state==='title'||state==='gameover'))startGame();
   if((e.key==='Escape'||e.key==='p'||e.key==='P')&&state==='playing')togglePause();
   if((e.key==='Escape'||e.key==='p'||e.key==='P')&&state==='paused')togglePause();
+  if((e.key==='z'||e.key==='Z'||e.key===' ')&&state==='playing'&&hasGun&&shootCooldown<=0)shoot();
 });
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 
@@ -603,6 +606,7 @@ cv.addEventListener('mousemove',e=>{
   wolf.tx=Math.max(PLAY_X+10,Math.min(W-CAGE_W-10,(e.clientX-r.left)*sx));
   wolf.ty=Math.max(30,Math.min(GND-18,(e.clientY-r.top)*sy));
 });
+cv.addEventListener('click',e=>{if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();});
 
 // Touchpad control
 const touchpad=document.getElementById('touchpad');
@@ -631,6 +635,7 @@ touchpad.addEventListener('touchstart',function(e){
   const t=e.touches[0];
   updateWolfFromTouch(t.clientX,t.clientY);
   touchDot.style.opacity='1';
+  if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();
 },{passive:false});
 
 touchpad.addEventListener('touchmove',function(e){
@@ -695,11 +700,17 @@ function sfxStart(){[330,440,550,660,880].forEach((f,i)=>setTimeout(()=>beep(f,.
 function sfxDie(){[440,330,220,110].forEach((f,i)=>setTimeout(()=>beep(f,.1,.5,'sawtooth'),i*80));}
 function sfxGameOver(){[220,196,174,165,146].forEach((f,i)=>setTimeout(()=>beep(f,.15,.5,'square'),i*100));}
 
+function shoot(){
+  const bx=wolf.x+(wolf.face>0?9:-9);
+  bullets.push({x:bx,y:wolf.y-10,vy:-3.2,life:1});
+  shootCooldown=12;
+  beep(1200,.06,.3,'square');
+}
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;chickenSway={};
-  eggs=[];sparks=[];msgs=[];flames=[];
+  sc=0;broken=0;consecutiveBroken=0;lives=3;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;chickenSway={};
+  eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
   state='playing';
@@ -727,7 +738,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
@@ -885,6 +896,38 @@ function update(dt){
     }
   }
 
+  if(!hasGun&&sc>=1500){hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
+  if(hasGun){
+    shootCooldown-=dt;
+    if(shootCooldown<0)shootCooldown=0;
+    monsterSpawnT-=dt;
+    if(monsterSpawnT<=0){
+      const mx=PLAY_X+20+Math.random()*(PLAY_W-40);
+      const spdMul=1+scoreMilestone*0.1;
+      monsters.push({x:mx,y:-10,vy:(1.5+Math.random()*0.8)*spdMul,life:1});
+      monsterSpawnT=120;
+    }
+    for(let i=bullets.length-1;i>=0;i--){
+      const b=bullets[i];
+      b.y+=b.vy*dt;b.life-=.04*dt;
+      if(b.y<-20||b.life<=0){bullets.splice(i,1);continue;}
+      for(let j=monsters.length-1;j>=0;j--){
+        const m=monsters[j];
+        if(Math.abs(b.x-m.x)<10&&Math.abs(b.y-m.y)<10){
+          addMsg(b.x,b.y-10,'+50',PAL.neonG);addSpark(b.x,b.y,true);sc+=50;if(sc>hi)hi=sc;upHUD();beep(990,.08,.5,'square');
+          monsters.splice(j,1);bullets.splice(i,1);break;
+        }
+      }
+    }
+    for(let i=monsters.length-1;i>=0;i--){
+      const m=monsters[i];
+      m.y+=m.vy*dt;
+      if(m.y>=GND-4){
+        addMsg(m.x,GND-14,'-75',PAL.neonR);addSpark(m.x,GND-4,false);sc=Math.max(0,sc-75);if(sc>hi)hi=sc;upHUD();sfxBreak();beep(100,.1,.4,'sawtooth');
+        monsters.splice(i,1);
+      }
+    }
+  }
   sparks.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.04*dt;p.life-=.055*dt;});
   sparks=sparks.filter(p=>p.life>0);
   flames.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=.04*dt;});
@@ -900,6 +943,8 @@ function render(){
   drawCage(0,false);
   drawCage(W-CAGE_W,true);
   drawEggs();
+  drawBullets();
+  drawMonsters();
   drawSparks();
   drawFlames();
   drawWolf();
@@ -1203,6 +1248,34 @@ function drawEggs(){
   });
 }
 
+function drawBullets(){
+  bullets.forEach(b=>{
+    const g=ct.createRadialGradient(b.x,b.y,1,b.x,b.y,6);
+    g.addColorStop(0,'#fff');g.addColorStop(0.3,'#ffff44');g.addColorStop(1,'rgba(255,200,0,0)');
+    ct.globalAlpha=Math.max(0,b.life);
+    ct.fillStyle=g;ct.beginPath();ct.arc(b.x,b.y,6,0,Math.PI*2);ct.fill();
+    ct.fillStyle='#ffdd00';ct.beginPath();ct.arc(b.x,b.y,2.5,0,Math.PI*2);ct.fill();
+    ct.globalAlpha=1;
+  });
+}
+function drawMonsters(){
+  monsters.forEach(m=>{
+    ct.globalAlpha=Math.max(0,m.life);
+    ct.fillStyle='#ff4488';
+    ct.strokeStyle='#cc2266';ct.lineWidth=1;
+    const mx=m.x,my=m.y;
+    ct.beginPath();ct.arc(mx,my-4,7,Math.PI,0,false);ct.fill();
+    ct.beginPath();ct.arc(mx,my-4,7,0,Math.PI,false);ct.lineTo(mx-7,my+6);ct.quadraticCurveTo(mx-4,my+4,mx-2,my+7);ct.quadraticCurveTo(mx,my+4,mx+2,my+7);ct.quadraticCurveTo(mx+4,my+4,mx+7,my+6);ct.closePath();ct.fill();
+    ct.strokeStyle='#aa1855';ct.lineWidth=0.8;ct.beginPath();ct.arc(mx,my-4,7,0,Math.PI*2);ct.stroke();
+    ct.fillStyle='#fff';ct.beginPath();ct.arc(mx-2.5,my-5,2.2,0,Math.PI*2);ct.fill();
+    ct.beginPath();ct.arc(mx+2.5,my-5,2.2,0,Math.PI*2);ct.fill();
+    ct.fillStyle='#222';ct.beginPath();ct.arc(mx-2.5,my-5,1.2,0,Math.PI*2);ct.fill();
+    ct.beginPath();ct.arc(mx+2.5,my-5,1.2,0,Math.PI*2);ct.fill();
+    ct.fillStyle='#fff';ct.beginPath();ct.arc(mx-3.5,my-6.5,0.7,0,Math.PI*2);ct.fill();
+    ct.beginPath();ct.arc(mx+1.5,my-6.5,0.7,0,Math.PI*2);ct.fill();
+    ct.globalAlpha=1;
+  });
+}
 function drawSparks(){
   sparks.forEach(p=>{
     ct.globalAlpha=p.life;
