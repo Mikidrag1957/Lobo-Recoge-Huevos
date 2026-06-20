@@ -1,0 +1,22 @@
+{
+  "name": "lobo-y-huevos-android",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo \"Web assets ready in public/\"",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android",
+    "copy": "npx cap copy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Lobo y Huevos - Android App",
+  "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/share": "^8.0.1"
+  }
+}

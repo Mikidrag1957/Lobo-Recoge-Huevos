@@ -1,0 +1,12 @@
+{
+  "appId": "com.mikatesoft.lobohuevos",
+  "appName": "Lobo y Huevos",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "androidScheme": "http",
+  "server": {
+    "hostname": "localhost",
+    "androidScheme": "http"
+  },
+  "plugins": {}
+}
