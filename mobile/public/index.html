@@ -591,6 +591,10 @@ function upHUD(){
   }
 }
 
+let livesTap=0;
+document.getElementById('lives-disp').addEventListener('click',()=>{
+  livesTap++;if(livesTap>=7){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
+});
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();
@@ -896,7 +900,7 @@ function update(dt){
     }
   }
 
-  if(!hasGun&&sc>=1500){hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
+  if(!hasGun&&sc>=1000){hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
   if(hasGun){
     shootCooldown-=dt;
     if(shootCooldown<0)shootCooldown=0;
