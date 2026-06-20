@@ -592,9 +592,12 @@ function upHUD(){
 }
 
 let livesTap=0;
-document.getElementById('lives-disp').addEventListener('click',()=>{
-  livesTap++;if(livesTap>=7){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
-});
+function checkLivesTap(){
+  if(state!=='paused')return;
+  livesTap++;if(livesTap>=7){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);setTimeout(()=>togglePause(),200);}
+}
+document.getElementById('lives-disp').addEventListener('click',checkLivesTap);
+document.getElementById('lives-disp').addEventListener('touchstart',e=>{e.stopPropagation();checkLivesTap();},{passive:true});
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();
@@ -707,13 +710,13 @@ function sfxGameOver(){[220,196,174,165,146].forEach((f,i)=>setTimeout(()=>beep(
 function shoot(){
   const bx=wolf.x+(wolf.face>0?9:-9);
   bullets.push({x:bx,y:wolf.y-10,vy:-3.2,life:1});
-  shootCooldown=12;
+  shootCooldown=4;
   beep(1200,.06,.3,'square');
 }
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;chickenSway={};
+  sc=0;broken=0;consecutiveBroken=0;lives=3;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -908,7 +911,7 @@ function update(dt){
     if(monsterSpawnT<=0){
       const mx=PLAY_X+20+Math.random()*(PLAY_W-40);
       const spdMul=1+scoreMilestone*0.1;
-      monsters.push({x:mx,y:-10,vy:(1.5+Math.random()*0.8)*spdMul,life:1});
+      monsters.push({x:mx,y:-10,vy:(0.8+Math.random()*0.6)*spdMul,life:1});
       monsterSpawnT=120;
     }
     for(let i=bullets.length-1;i>=0;i--){
@@ -926,8 +929,12 @@ function update(dt){
     for(let i=monsters.length-1;i>=0;i--){
       const m=monsters[i];
       m.y+=m.vy*dt;
+      if(Math.abs(m.x-wolf.x)<12&&Math.abs(m.y-wolf.y)<12){
+        addMsg(m.x,m.y-10,'+50',PAL.neonG);addSpark(m.x,m.y,true);sc+=50;if(sc>hi)hi=sc;upHUD();beep(990,.08,.5,'square');
+        monsters.splice(i,1);continue;
+      }
       if(m.y>=GND-4){
-        addMsg(m.x,GND-14,'-75',PAL.neonR);addSpark(m.x,GND-4,false);sc=Math.max(0,sc-75);if(sc>hi)hi=sc;upHUD();sfxBreak();beep(100,.1,.4,'sawtooth');
+        addMsg(m.x,GND-14,'-20',PAL.neonR);addSpark(m.x,GND-4,false);sc=Math.max(0,sc-20);if(sc>hi)hi=sc;upHUD();sfxBreak();beep(100,.1,.4,'sawtooth');
         monsters.splice(i,1);
       }
     }
