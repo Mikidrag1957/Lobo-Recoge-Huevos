@@ -310,7 +310,7 @@ function applyLang(){
   document.getElementById('s-save-name').placeholder=t('yourName');
   upHUD();
 }
-let state='title',sc=0,hi=0,lives=3,broken=0,consecutiveBroken=0,lvl=1,eggCount=0;
+let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lvl=1,eggCount=0;
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
 let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
@@ -653,12 +653,18 @@ function upHUD(){
     d.className='life-heart';
     ld.appendChild(d);
   }
+  for(let i=0;i<Math.max(0,bonusLives);i++){
+    const d=document.createElement('div');
+    d.className='life-heart';
+    d.style.background='#ff8800';d.style.clipPath='polygon(50% 90%,5% 35%,20% 10%,50% 30%,80% 10%,95% 35%)';
+    ld.appendChild(d);
+  }
 }
 
 let livesTap=0;
 function checkLivesTap(){
   if(state!=='paused')return;
-  livesTap++;if(livesTap>=3){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);setTimeout(()=>togglePause(),200);}
+  livesTap++;if(livesTap>=3){livesTap=0;hasGun=true;bonusLives=2;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);setTimeout(()=>togglePause(),200);}
 }
 document.getElementById('lives-disp').addEventListener('click',checkLivesTap);
 document.getElementById('lives-disp').addEventListener('touchstart',e=>{e.stopPropagation();checkLivesTap();},{passive:true});
@@ -780,7 +786,7 @@ function shoot(){
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -963,7 +969,8 @@ function update(dt){
         addMsg(W/2,H/2-8,t('doubleMode'),'#ffdd00');
       }
       if(broken>=cfg.maxBrk){
-        lives--;upHUD();sfxDie();broken=0;
+        if(bonusLives>0){bonusLives--}else{lives--}
+        upHUD();sfxDie();broken=0;
         if(lives<=0){
           state='gameover';sfxGameOver();
           if(sc>hi)hi=sc;
