@@ -74,7 +74,7 @@ canvas{display:block;width:100%;border-radius:0}
   <div id="marquee">
     <div id="title-txt"></div>
     <div id="hud-bar">
-      <div class="hud-item"><span data-lk="score"></span> <span class="hud-val" id="hScore">000000</span></div>
+      <div class="hud-item"><span id="hScoreLabel">Jugador</span> <span class="hud-val" id="hScore">000000</span></div>
       <div class="hud-item"><span data-lk="hiscore"></span> <span class="hud-val" id="hHi">000000</span></div>
       <div class="hud-item"><span data-lk="lives"></span>
         <div id="lives-disp">
@@ -262,6 +262,7 @@ function applyLang(){
   document.getElementById('splash-title-sk').textContent=t('splashLoboSK');
   document.getElementById('sv-name').placeholder=t('yourName');
   document.getElementById('s-save-name').placeholder=t('yourName');
+  upHUD();
 }
 let state='title',sc=0,hi=0,lives=3,broken=0,consecutiveBroken=0,lvl=1,eggCount=0;
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
@@ -496,9 +497,10 @@ function renderSaves(){
   el.innerHTML=saves.map((s,i)=>{
     const d=new Date(s.date);
     const ds=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const a=s.accum||s.sc;
     return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:8px;font-size:11px">'+
       '<span style="color:#4a8eff;font-weight:600;min-width:60px">'+s.name+'</span>'+
-      '<span style="color:#aaa">'+t('pts')+s.sc+' '+t('lvlShort')+s.lvl+'</span>'+
+      '<span style="color:#aaa">'+t('pts')+a+' <span style="color:#555">('+s.sc+' '+t('lvlShort')+s.lvl+')</span></span>'+
       '<span style="color:#555;flex:1;text-align:right;font-size:10px">'+ds+'</span>'+
       '<button class="abtn" data-load="'+i+'" style="padding:4px 10px;font-size:10px">'+t('load')+'</button>'+
       '<button class="abtn red" data-del="'+i+'" style="padding:4px 8px;font-size:10px">✕</button></div>'
@@ -521,13 +523,15 @@ function renderSaves(){
 document.getElementById('s-save-btn').addEventListener('click',function(){
   const name=document.getElementById('s-save-name').value.trim();
   if(!name)return;
+  saveLastPlayer(name);
   const saves=getSaves();
   const existing=saves.findIndex(s=>s.name.toLowerCase()===name.toLowerCase());
-  const entry={name,sc,hi,lvl,lives,date:Date.now()};
+  const entry={name,sc,hi,lvl,lives,date:Date.now(),accum:sc+(existing>=0?Math.max(0,saves[existing].accum||0):0)};
   if(existing>=0){saves[existing]=entry}else{saves.push(entry)}
   putSaves(saves);
   document.getElementById('s-save-name').value='';
   renderSaves();
+  upHUD();
 });
 
 function saveColors(){
@@ -576,12 +580,21 @@ so.addEventListener('click',e=>{if(e.target===so)so.classList.remove('open');});
 // Hi-score persist
 function loadHi(){ try{ var h=parseInt(localStorage.getItem('lobo_hi')); if(h>0) hi=h; }catch(e){} }
 function saveHi(){ try{ if(hi>0) localStorage.setItem('lobo_hi',hi); }catch(e){} }
+function getLastPlayer(){try{return localStorage.getItem('lobo_last_player')||''}catch(e){return''}}
+function saveLastPlayer(n){try{if(n)localStorage.setItem('lobo_last_player',n)}catch(e){}}
+function playerAccum(name){
+  if(!name)return 0;
+  const saves=getSaves();
+  const s=saves.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  return s?Math.max(0,s.accum||0):0;
+}
 
 function fmt(n){return String(Math.min(999999,n)).padStart(6,'0');}
 function upHUD(){
   document.getElementById('hScore').textContent=fmt(sc);
   document.getElementById('hHi').textContent=fmt(hi);
   document.getElementById('hLvl').textContent=lvl;
+  document.getElementById('hScoreLabel').textContent=getLastPlayer()||t('name');
   const ld=document.getElementById('lives-disp');
   ld.innerHTML='';
   for(let i=0;i<Math.max(0,lives);i++){
@@ -758,8 +771,9 @@ const saveOverlay=document.getElementById('save-overlay');
 var saveAfterQuit=false;
 function showSaveOverlay(afterQuit){
   saveAfterQuit=!!afterQuit;
-  document.getElementById('sv-score').textContent=t('scoreTxt')+': '+fmt(sc);
-  document.getElementById('sv-name').value='';
+  const prevName=getLastPlayer();
+  document.getElementById('sv-name').value=prevName;
+  document.getElementById('sv-score').textContent=t('scoreTxt')+': '+fmt(sc)+'  |  '+t('pts')+playerAccum(prevName);
   saveOverlay.classList.add('open');
   setTimeout(()=>document.getElementById('sv-name').focus(),100);
 }
@@ -776,9 +790,10 @@ function hideSaveOverlay(){
 document.getElementById('sv-save').addEventListener('click',function(){
   const name=document.getElementById('sv-name').value.trim();
   if(!name){hideSaveOverlay();return}
+  saveLastPlayer(name);
   const saves=getSaves();
   const existing=saves.findIndex(s=>s.name.toLowerCase()===name.toLowerCase());
-  const entry={name,sc,hi,lvl,lives,date:Date.now()};
+  const entry={name,sc,hi,lvl,lives,date:Date.now(),accum:sc+(existing>=0?Math.max(0,saves[existing].accum||0):0)};
   if(existing>=0){saves[existing]=entry}else{saves.push(entry)}
   putSaves(saves);
   hideSaveOverlay();
