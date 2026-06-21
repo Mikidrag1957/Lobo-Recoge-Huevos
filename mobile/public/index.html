@@ -89,7 +89,7 @@ canvas{display:block;width:100%;border-radius:0}
           <div class="life-heart"></div>
         </div>
       </div>
-      <div class="hud-item"><span data-lk="lvl"></span> <span class="hud-val" id="hLvl">1</span></div>
+      <div class="hud-item"><span data-lk="lvl"></span> <span class="hud-val" id="hLvl">1</span> <span id="golden-indicator" style="color:#ffd700;font-size:12px;margin-left:4px"></span></div>
     </div>
   </div>
   <div id="ctrl-bar">
@@ -310,10 +310,10 @@ function applyLang(){
   document.getElementById('s-save-name').placeholder=t('yourName');
   upHUD();
 }
-let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lvl=1,eggCount=0;
+let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lvl=1,eggCount=0,streak=0;
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
-let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
+let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0,invincibleT=0,flashT=0;
 let giantEgg=null,giantEggShown=false,chickenTap=0;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
@@ -647,6 +647,8 @@ function upHUD(){
   document.getElementById('hHi').textContent=fmt(hi);
   document.getElementById('hLvl').textContent=lvl;
   document.getElementById('hScoreLabel').textContent=getLastPlayer()||t('name');
+  const nextGold=20-(eggCount%20||20);
+  document.getElementById('golden-indicator').textContent='\u2605'+nextGold+(streak>1?' |'+streak+'x':'');
   const ld=document.getElementById('lives-disp');
   ld.innerHTML='';
   for(let i=0;i<Math.max(0,lives);i++){
@@ -692,6 +694,10 @@ cv.addEventListener('click',e=>{
     const ry=ROWS[5];
     if(cy>ry-14&&cy<ry+18&&((cx>=0&&cx<CAGE_W)||(cx>W-CAGE_W&&cx<=W))){
       chickenTap++;
+      const side=cx<W/2?'L':'R';
+      chickenSway[side+5]={t:30,m:30};
+      addMsg(cx,ry-20,'!'+chickenTap+'/3','#ffd700');
+      beep(880,.06,.3,'sine');
       if(chickenTap>=3){
         chickenTap=0;giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};
         addMsg(W/2,30,t('giantEgg'),'#ffd700');
@@ -802,11 +808,11 @@ function shoot(){
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;invincibleT=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
-  state='playing';
+  state='playing';flashT=8;
   document.getElementById('bP').disabled=false;
   document.getElementById('bP').textContent=t('pause');
   upHUD();
@@ -831,7 +837,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;invincibleT=0;flashT=0;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
@@ -960,7 +966,10 @@ function update(dt){
     if(caught){
       e.state='got';e.timer=18;
       addSpark(e.x,e.y,true);sfxCatch();
-      consecutiveBroken=0;
+      consecutiveBroken=0;streak++;
+      if(streak===5){sc+=30;addMsg(e.x,e.y-28,'Streak x5 +30','#44ddff');beep(660,.06,.4,'sine');}
+      if(streak===10){sc+=80;addMsg(e.x,e.y-28,'Streak x10 +80','#44ddff');beep(880,.08,.5,'sine');}
+      if(streak===20){sc+=200;addMsg(e.x,e.y-28,'Streak x20 +200','#44ddff');beep(1100,.1,.6,'sine');}
       if(doubleMode){catchInDouble++;if(catchInDouble>=5){doubleMode=false;catchInDouble=0;addMsg(W/2,H/2-8,t('doubleEnd'),'#aaa');}}
       let ePts=(10+e.ri*2)*lvl;
       if(e.golden)ePts*=3;
@@ -978,15 +987,16 @@ function update(dt){
     } else if(e.y>GND-2){
       e.state='brk';e.timer=20;e.y=GND-4;
       addSpark(e.x,GND-4,false);sfxBreak();
-      broken++;consecutiveBroken++;
+      broken++;consecutiveBroken++;streak=0;
       addMsg(e.x,GND-14,t('miss'),PAL.neonR);
       if(consecutiveBroken>=3&&!doubleMode){
         doubleMode=true;catchInDouble=0;
         addMsg(W/2,H/2-8,t('doubleMode'),'#ffdd00');
       }
       if(broken>=cfg.maxBrk){
+        if(invincibleT>0){broken=0;continue}
         if(bonusLives>0){bonusLives--}else{lives--}
-        upHUD();sfxDie();broken=0;
+        invincibleT=60;upHUD();sfxDie();broken=0;
         if(lives<=0){
           state='gameover';sfxGameOver();
           if(sc>hi)hi=sc;
@@ -1054,6 +1064,8 @@ function update(dt){
       if(giantEgg&&giantEgg.y>GND+10){giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');}
     }
   }
+  if(invincibleT>0)invincibleT-=dt;
+  if(flashT>0)flashT-=dt;
   sparks.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.04*dt;p.life-=.055*dt;});
   sparks=sparks.filter(p=>p.life>0);
   flames.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=.04*dt;});
@@ -1077,6 +1089,7 @@ function render(){
   drawWolf();
   drawMessages();
   if(state==='paused')drawPauseScreen();
+  if(flashT>0){ct.fillStyle='rgba(255,255,255,'+(flashT/10)+')';ct.fillRect(0,0,W,H);}
 }
 
 function drawPlayfield(){
@@ -1461,6 +1474,7 @@ function drawFlames(){
 }
 
 function drawWolf(){
+  if(invincibleT>0&&Math.floor(invincibleT/4)%2===0)return;
   const wx=wolf.x,wy=wolf.y,f=wolf.face;
   const bob=Math.sin(wolf.bobT)*1.2;
   const by=wy+bob;
