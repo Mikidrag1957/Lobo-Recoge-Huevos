@@ -818,6 +818,7 @@ function spawnEgg(){
   let spd=cfg.spd*(0.75+Math.random()*.5)*spdMul;
   const golden=eggCount%20===0;
   if(golden)spd*=1.4;
+  if(doubleMode)spd*=0.75;
   const vx=fromLeft?spd:-spd;
   const vy=(Math.random()-.5)*spd*.25;
   const sx=fromLeft?CAGE_W-1:W-CAGE_W+1;
