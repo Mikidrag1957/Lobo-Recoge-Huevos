@@ -63,6 +63,12 @@ canvas{display:block;width:100%;border-radius:0}
 #ssize-val{color:#4a8eff;font-size:12px;font-weight:600;min-width:40px;text-align:center}
 #sreset{background:rgba(255,68,68,.1);color:#ff5577;border:1px solid rgba(255,68,68,.3);padding:8px 16px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px;margin-top:14px;width:100%;transition:all .15s}
 #sreset:hover{background:rgba(255,68,68,.2);border-color:rgba(255,68,68,.5)}
+#info-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s}
+#info-overlay.open{opacity:1;pointer-events:auto}
+#info-panel{background:#12122a;border-radius:16px;width:90%;max-width:460px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.06)}
+#info-panel::-webkit-scrollbar{width:4px}
+#info-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.info-txt{color:#b0b8c8;font-size:11px;line-height:1.6;margin:6px 0 12px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px}
 .ssize-presets{display:flex;gap:6px;margin:6px 0 0 92px}
 .ssize-presets button{background:rgba(255,255,255,.04);color:#7a8a9a;border:1px solid rgba(255,255,255,.08);font-family:inherit;font-size:11px;font-weight:500;cursor:pointer;padding:4px 12px;border-radius:6px;transition:all .15s}
 .ssize-presets button:hover{border-color:rgba(74,142,255,.4);color:#4a8eff}
@@ -95,6 +101,7 @@ canvas{display:block;width:100%;border-radius:0}
       <option value="2" data-lk="normal"></option>
       <option value="3" data-lk="hard"></option>
     </select>
+    <button class="abtn" id="bInfo" style="font-weight:700">?</button>
     <button class="abtn grn" id="bSettings">⚙</button>
     <span style="color:#555;font-size:10px;font-style:italic">⌨ 🖱</span>
   </div>
@@ -114,6 +121,31 @@ canvas{display:block;width:100%;border-radius:0}
         <button class="abtn grn" id="sv-save" style="flex:1;padding:8px" data-lk="save"></button>
         <button class="abtn red" id="sv-skip" style="flex:1;padding:8px" data-lk="skip"></button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="info-overlay">
+  <div id="info-panel">
+    <div id="shead">
+      <span>? <span data-lk="info"></span></span>
+      <button id="iclose">✕</button>
+    </div>
+    <div id="sbody">
+      <div class="sec-title" data-lk="infoHowTo"></div>
+      <div class="info-txt" data-lk="infoHowToTxt"></div>
+      <div class="sec-title" data-lk="infoScore"></div>
+      <div class="info-txt" data-lk="infoScoreTxt"></div>
+      <div class="sec-title" data-lk="infoGolden"></div>
+      <div class="info-txt" data-lk="infoGoldenTxt"></div>
+      <div class="sec-title" data-lk="infoDown"></div>
+      <div class="info-txt" data-lk="infoDownTxt"></div>
+      <div class="sec-title" data-lk="infoDouble"></div>
+      <div class="info-txt" data-lk="infoDoubleTxt"></div>
+      <div class="sec-title" data-lk="infoMonster"></div>
+      <div class="info-txt" data-lk="infoMonsterTxt"></div>
+      <div class="sec-title" data-lk="infoWeapon"></div>
+      <div class="info-txt" data-lk="infoWeaponTxt"></div>
     </div>
   </div>
 </div>
@@ -221,6 +253,13 @@ const LANG={es:{},sk:{}};
   o.doubleMode='\u00a1DOBLE!';o.lifeLost='\u00a1PERDISTE UNA VIDA!';o.velShort='VEL';o.pts='Pts:';o.lvlShort='Lvl:';
   o.weapon='\u00a1ARMA DESBLOQUEADA!';o.monsterHit='+50';o.monsterMiss='-75';
   o.lang='Idioma';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='COMPARTIR APP';o.shareText='\u00a1Prueba Lobo Recoge Huevos! Un divertido juego de recoger huevos.';
+  o.info='INFORMACI\u00d3N';o.infoHowTo='\u00bfC\u00d3MO JUGAR?';o.infoHowToTxt='Mueve al lobo con el touchpad, las flechas del teclado o el rat\u00f3n. Atrapa los huevos con la cesta. \u00a1No dejes que caigan al suelo! Tienes 3 vidas. Si fallas 3 huevos seguidos, se activa el MODO DOBLE (los huevos caen de 2 en 2 durante 5 capturas).';
+  o.infoScore='PUNTUACI\u00d3N POR FILA';o.infoScoreTxt='Los huevos valen puntos seg\u00fan la altura de la gallina: 10 (arriba) a 20 (abajo) \u00d7 nivel. Las gallinas inferiores lanzan huevos m\u00e1s dif\u00edciles de recoger, \u00a1pero dan m\u00e1s puntos!';
+  o.infoGolden='HUEVOS DORADOS';o.infoGoldenTxt='Cada 20 huevos aparece uno DORADO: 40% m\u00e1s r\u00e1pido, brillo \u00fanico y \u00a1puntos \u00d73!';
+  o.infoDown='ATRAPAR BAJANDO';o.infoDownTxt='Si atrapas un huevo mientras el lobo baja, obtienes puntos \u00d72. \u00a1Comb\u00ednalo con el huevo dorado para conseguir \u00d76!';
+  o.infoDouble='MODO DOBLE';o.infoDoubleTxt='Al alcanzar 500 puntos entras en MODO PERMANENTE = Nivel +1 y huevos en parejas (25% m\u00e1s lentos). Tambi\u00e9n se activa si fallas 3 huevos seguidos (temporal: 5 atrapadas y vuelve a normal). Cada 100 puntos: +10% velocidad (hasta +40%).';
+  o.infoMonster='MONSTRUOS "COCOS"';o.infoMonsterTxt='Aparecen al desbloquear el arma. Caen desde arriba como fantasmas. Si el lobo salta sobre uno (tocarlo desde arriba mientras baja): +50 puntos. Si llegan al suelo: -20 puntos. Puedes dispararles con la tecla Z, ESPACIO, click o tap.';
+  o.infoWeapon='ARMA / TRUCO';o.infoWeaponTxt='El arma se desbloquea al alcanzar 1000 puntos. TRUCO SECRETO: estando en PAUSA, pulsa 7 veces sobre "VIDAS" para desbloquear el arma inmediatamente.';
 });
 ['es','sk'].forEach(l=>{
   if(l==='sk'){
@@ -247,7 +286,14 @@ const LANG={es:{},sk:{}};
     o.doubleEnd='NORM\u00c1LNE!';o.levelUp='\u00daROVE\u0147';o.miss='TRUFE!';
     o.doubleMode='DVOJIT\u00c9!';o.lifeLost='STRATEN\u00dd \u017dIVOT!';o.velShort='R\u00ddCH';o.pts='Body:';o.lvlShort='\u00dar:';
     o.weapon='ZBRAŇ ODOMKNUTÁ!';o.monsterHit='+50';o.monsterMiss='-75';
-    o.lang='Jazyk';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='ZDIE\u013dAŤ APP';o.shareText='Vyskú\u0161aj Vlk zbiera vajcia! Zábavná hra na zbieranie vajec.';
+    o.lang='Jazyk';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='ZDIE\u013dA\u0164 APP';o.shareText='Vyskú\u0161aj Vlk zbiera vajcia! Zábavná hra na zbieranie vajec.';
+    o.info='INFORM\u00c1CIE';o.infoHowTo='AKO HRA\u0164?';o.infoHowToTxt='Pohybuj vlkom pomocou touchpadu, \u0165ipiek na kl\u00e1vesnici alebo my\u0161i. Chytaj vajcia do ko\u0161a. Nenechaj ich spadnú\u0165 na zem! M\u00e1\u0161 3 \u017eivoty. Ak 3-kr\u00e1t po sebe netrafí\u0161, spustí sa DVOJITÝ RE\u017dIM (vajcia padajú po 2 po dobu 5 chytení).';
+    o.infoScore='SKÓRE POD\u013dA RIADKU';o.infoScoreTxt='Vajcia majú hodnotu pod\u013ea v\u00fd\u0161ky sliepky: 10 (hore) a\u017e 20 (dole) × úroveň. Spodné sliepky hád\u017eu vajcia, ktoré sa \u0165a\u017ešie chytajú, ale dávajú viac bodov!';
+    o.infoGolden='ZLATÉ VAJCIA';o.infoGoldenTxt='Ka\u017edé 20. vajce je ZLATÉ: o 40% rýchlejšie, jedine\u010dný lesk a body ×3!';
+    o.infoDown='CHYTENIE ZHORA';o.infoDownTxt='Ak chytí\u0161 vajce, keï vlk klesá, získavate body ×2. Skombinuj so zlatým vajcom a získaj a\u017e ×6 bodov!';
+    o.infoDouble='DVOJITÝ RE\u017dIM';o.infoDoubleTxt='Po dosiahnutí 500 bodov vstúpi\u0161 do TRVALÉHO RE\u017dIMU = Úroveň +1 a vajcia v pároch (o 25% pomalšie). Spustí sa aj po 3 netrafených vajciach v rade (do\u010dasn\u00fd: 5 chytení a vráti sa do normálu). Ka\u017edých 100 bodov: +10% rýchlosť (a\u017e +40%).';
+    o.infoMonster='PRÍ\u0162ERY "KOKOS"';o.infoMonsterTxt='Objavia sa po odomknutí zbrane. Padajú zhora ako duchovia. Ak na neho vlk skoèí zhora (dotyk zhora pri klesaní): +50 bodov. Ak dosiahne zem: -20 bodov. Mô\u017eeš na ne strie\u013eať klávesou Z, MEDZERNÍKOM, kliknutím alebo tapnutím.';
+    o.infoWeapon='ZBRAŇ / TRIK';o.infoWeaponTxt='Zbraň sa odomkne po dosiahnutí 1000 bodov. TAJNÝ TRIK: po\u010das PAUZY klikni 7-krát na "ŽIVOTY" pre okam\u017eité odomknutie zbrane.';
   }
 });
 var lang='es';
@@ -571,6 +617,11 @@ function loadSettings(){
   }
   applyLang();
 }
+
+const io=document.getElementById('info-overlay');
+document.getElementById('bInfo').onclick=()=>{io.classList.add('open');};
+document.getElementById('iclose').onclick=()=>{io.classList.remove('open');};
+io.addEventListener('click',e=>{if(e.target===io)io.classList.remove('open');});
 
 const so=document.getElementById('settings-overlay');
 document.getElementById('bSettings').onclick=()=>{so.classList.add('open');renderSaves();};
