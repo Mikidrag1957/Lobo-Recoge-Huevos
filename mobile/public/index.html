@@ -686,7 +686,7 @@ cv.addEventListener('mousemove',e=>{
 });
 cv.addEventListener('click',e=>{
   if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();
-  if(state==='playing'&&!giantEggShown){
+  if(state==='paused'&&!giantEggShown){
     const r=cv.getBoundingClientRect(),sx=W/r.width,sy=H/r.height;
     const cx=(e.clientX-r.left)*sx,cy=(e.clientY-r.top)*sy;
     const ry=ROWS[5];
