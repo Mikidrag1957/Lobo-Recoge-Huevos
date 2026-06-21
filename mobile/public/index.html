@@ -699,7 +699,7 @@ cv.addEventListener('click',e=>{
       addMsg(cx,ry-20,'!'+chickenTap+'/3','#ffd700');
       beep(880,.06,.3,'sine');
       if(chickenTap>=3){
-        chickenTap=0;giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};
+        chickenTap=0;hasGun=true;giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};monsterSpawnT=0;
         addMsg(W/2,30,t('giantEgg'),'#ffd700');
         beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);
       }
@@ -1049,20 +1049,20 @@ function update(dt){
         monsters.splice(i,1);
       }
     }
-    if(giantEgg){
-      giantEgg.y+=giantEgg.vy*dt;
-      for(let i=bullets.length-1;i>=0;i--){
-        const b=bullets[i];
-        if(Math.abs(b.x-giantEgg.x)<24&&Math.abs(b.y-giantEgg.y)<24){
-          giantEgg.hp--;bullets.splice(i,1);addSpark(b.x,b.y,true);beep(800,.06,.4,'sine');
-          if(giantEgg.hp<=0){
-            sc+=250;if(sc>hi)hi=sc;addMsg(giantEgg.x,giantEgg.y,'+250 Bonus!','#ffd700');upHUD();giantEgg=null;beep(600,.1,.5,'sine');setTimeout(()=>beep(900,.15,.6,'sine'),100);setTimeout(()=>beep(1200,.2,.7,'sine'),200);
-          }
-          break;
+  }
+  if(giantEgg){
+    giantEgg.y+=giantEgg.vy*dt;
+    for(let i=bullets.length-1;i>=0;i--){
+      const b=bullets[i];
+      if(Math.abs(b.x-giantEgg.x)<24&&Math.abs(b.y-giantEgg.y)<24){
+        giantEgg.hp--;bullets.splice(i,1);addSpark(b.x,b.y,true);beep(800,.06,.4,'sine');
+        if(giantEgg.hp<=0){
+          sc+=250;if(sc>hi)hi=sc;addMsg(giantEgg.x,giantEgg.y,'+250 Bonus!','#ffd700');upHUD();giantEgg=null;beep(600,.1,.5,'sine');setTimeout(()=>beep(900,.15,.6,'sine'),100);setTimeout(()=>beep(1200,.2,.7,'sine'),200);
         }
+        break;
       }
-      if(giantEgg&&giantEgg.y>GND+10){giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');}
     }
+    if(giantEgg&&giantEgg.y>GND+10){giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');}
   }
   if(invincibleT>0)invincibleT-=dt;
   if(flashT>0)flashT-=dt;
