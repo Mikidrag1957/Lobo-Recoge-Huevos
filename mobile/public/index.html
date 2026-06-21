@@ -259,7 +259,7 @@ const LANG={es:{},sk:{}};
   o.infoDown='ATRAPAR BAJANDO';o.infoDownTxt='Si atrapas un huevo mientras el lobo baja, obtienes puntos \u00d72. \u00a1Comb\u00ednalo con el huevo dorado para conseguir \u00d76!';
   o.infoDouble='MODO DOBLE';o.infoDoubleTxt='Al alcanzar 500 puntos entras en MODO PERMANENTE = Nivel +1 y huevos en parejas (25% m\u00e1s lentos). Tambi\u00e9n se activa si fallas 3 huevos seguidos (temporal: 5 atrapadas y vuelve a normal). Cada 100 puntos: +10% velocidad (hasta +40%).';
   o.infoMonster='MONSTRUOS "COCOS"';o.infoMonsterTxt='Aparecen al desbloquear el arma. Caen desde arriba como fantasmas. Si el lobo salta sobre uno (tocarlo desde arriba mientras baja): +50 puntos. Si llegan al suelo: -20 puntos. Puedes dispararles con la tecla Z, ESPACIO, click o tap.';
-  o.infoWeapon='ARMA / TRUCO';o.infoWeaponTxt='El arma se desbloquea al alcanzar 1000 puntos. TRUCO SECRETO: estando en PAUSA, pulsa 7 veces sobre "VIDAS" para desbloquear el arma inmediatamente.';
+  o.infoWeapon='ARMA / TRUCO';o.infoWeaponTxt='El arma se desbloquea al alcanzar 1000 puntos. TRUCO SECRETO: estando en PAUSA, pulsa 3 veces sobre "VIDAS" para desbloquear el arma inmediatamente.';
 });
 ['es','sk'].forEach(l=>{
   if(l==='sk'){
@@ -293,7 +293,7 @@ const LANG={es:{},sk:{}};
     o.infoDown='CHYTENIE ZHORA';o.infoDownTxt='Ak chytí\u0161 vajce, keï vlk klesá, získavate body ×2. Skombinuj so zlatým vajcom a získaj a\u017e ×6 bodov!';
     o.infoDouble='DVOJITÝ RE\u017dIM';o.infoDoubleTxt='Po dosiahnutí 500 bodov vstúpi\u0161 do TRVALÉHO RE\u017dIMU = Úroveň +1 a vajcia v pároch (o 25% pomalšie). Spustí sa aj po 3 netrafených vajciach v rade (do\u010dasn\u00fd: 5 chytení a vráti sa do normálu). Ka\u017edých 100 bodov: +10% rýchlosť (a\u017e +40%).';
     o.infoMonster='PRÍ\u0162ERY "KOKOS"';o.infoMonsterTxt='Objavia sa po odomknutí zbrane. Padajú zhora ako duchovia. Ak na neho vlk skoèí zhora (dotyk zhora pri klesaní): +50 bodov. Ak dosiahne zem: -20 bodov. Mô\u017eeš na ne strie\u013eať klávesou Z, MEDZERNÍKOM, kliknutím alebo tapnutím.';
-    o.infoWeapon='ZBRAŇ / TRIK';o.infoWeaponTxt='Zbraň sa odomkne po dosiahnutí 1000 bodov. TAJNÝ TRIK: po\u010das PAUZY klikni 7-krát na "ŽIVOTY" pre okam\u017eité odomknutie zbrane.';
+    o.infoWeapon='ZBRAŇ / TRIK';o.infoWeaponTxt='Zbraň sa odomkne po dosiahnutí 1000 bodov. TAJNÝ TRIK: po\u010das PAUZY klikni 3-krát na "ŽIVOTY" pre okam\u017eité odomknutie zbrane.';
   }
 });
 var lang='es';
@@ -658,7 +658,7 @@ function upHUD(){
 let livesTap=0;
 function checkLivesTap(){
   if(state!=='paused')return;
-  livesTap++;if(livesTap>=7){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);setTimeout(()=>togglePause(),200);}
+  livesTap++;if(livesTap>=3){livesTap=0;hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);setTimeout(()=>togglePause(),200);}
 }
 document.getElementById('lives-disp').addEventListener('click',checkLivesTap);
 document.getElementById('lives-disp').addEventListener('touchstart',e=>{e.stopPropagation();checkLivesTap();},{passive:true});
