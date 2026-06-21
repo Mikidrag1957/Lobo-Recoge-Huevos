@@ -314,7 +314,7 @@ let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lv
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
 let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
-let giantEgg=null,giantEggShown=false;
+let giantEgg=null,giantEggShown=false,chickenTap=0;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
 let blinkT=0,blinkOn=true,gameT=0;
@@ -684,7 +684,22 @@ cv.addEventListener('mousemove',e=>{
   wolf.tx=Math.max(PLAY_X+10,Math.min(W-CAGE_W-10,(e.clientX-r.left)*sx));
   wolf.ty=Math.max(30,Math.min(GND-18,(e.clientY-r.top)*sy));
 });
-cv.addEventListener('click',e=>{if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();});
+cv.addEventListener('click',e=>{
+  if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();
+  if(state==='playing'&&!giantEggShown){
+    const r=cv.getBoundingClientRect(),sx=W/r.width,sy=H/r.height;
+    const cx=(e.clientX-r.left)*sx,cy=(e.clientY-r.top)*sy;
+    const ry=ROWS[5];
+    if(cy>ry-14&&cy<ry+18&&((cx>=0&&cx<CAGE_W)||(cx>W-CAGE_W&&cx<=W))){
+      chickenTap++;
+      if(chickenTap>=3){
+        chickenTap=0;giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};
+        addMsg(W/2,30,t('giantEgg'),'#ffd700');
+        beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);
+      }
+    }
+  }
+});
 
 // Touchpad control
 const touchpad=document.getElementById('touchpad');
@@ -787,7 +802,7 @@ function shoot(){
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -816,7 +831,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
