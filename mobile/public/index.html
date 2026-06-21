@@ -263,7 +263,7 @@ function applyLang(){
   document.getElementById('sv-name').placeholder=t('yourName');
   document.getElementById('s-save-name').placeholder=t('yourName');
 }
-let state='title',sc=0,hi=0,lives=3,broken=0,consecutiveBroken=0,lvl=1;
+let state='title',sc=0,hi=0,lives=3,broken=0,consecutiveBroken=0,lvl=1,eggCount=0;
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
 let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
@@ -807,6 +807,7 @@ function addFlame(x,y){
 function addMsg(x,y,txt,col){msgs.push({x,y,txt,col,life:1,vy:-0.5});}
 
 function spawnEgg(){
+  eggCount++;
   const fromLeft=Math.random()<.5;
   const cfg=LCFG[lvl];
   const ri=Math.floor(Math.random()*ROWS.length);
@@ -814,12 +815,16 @@ function spawnEgg(){
   const key=(fromLeft?'L':'R')+ri;
   chickenSway[key]={t:40,m:40};
   const spdMul=1+scoreMilestone*0.1;
-  const spd=cfg.spd*(0.75+Math.random()*.5)*spdMul;
+  let spd=cfg.spd*(0.75+Math.random()*.5)*spdMul;
+  const golden=eggCount%20===0;
+  if(golden)spd*=1.4;
   const vx=fromLeft?spd:-spd;
   const vy=(Math.random()-.5)*spd*.25;
   const sx=fromLeft?CAGE_W-1:W-CAGE_W+1;
-  beep(700,.04,.3,'square');setTimeout(()=>beep(500,.06,.25,'square'),50);setTimeout(()=>beep(600,.04,.2,'square'),110);
-  eggs.push({x:sx,y:row,vx,vy,state:'fly',timer:0,trail:[],ri});
+  if(golden)beep(1200,.06,.4,'sine');else beep(700,.04,.3,'square');
+  setTimeout(()=>beep(golden?900:500,.06,.25,'square'),50);
+  setTimeout(()=>beep(golden?1400:600,.04,.2,golden?'sine':'square'),110);
+  eggs.push({x:sx,y:row,vx,vy,state:'fly',timer:0,trail:[],ri,golden});
 }
 
 function loop(ts){
@@ -868,13 +873,17 @@ function update(dt){
       addSpark(e.x,e.y,true);sfxCatch();
       consecutiveBroken=0;
       if(doubleMode){catchInDouble++;if(catchInDouble>=5){doubleMode=false;catchInDouble=0;addMsg(W/2,H/2-8,t('doubleEnd'),'#aaa');}}
-      const ePts=(10+e.ri*2)*lvl;sc+=ePts;if(sc>hi)hi=sc;
+      let ePts=(10+e.ri*2)*lvl;
+      if(e.golden)ePts*=3;
+      if(wolf.ty-wolf.y>2)ePts*=2;
+      sc+=ePts;if(sc>hi)hi=sc;
       if(!permDouble && sc>=500){permDouble=true;lvl=Math.min(lvl+1,3);doubleMode=true;scoreMilestone=0;addMsg(W/2,H/2-8,t('levelUp')+' '+lvl+'!','#ffdd00');}
       if(!permDouble && sc>=100 && scoreMilestone<1){scoreMilestone=1;addMsg(W/2,H/2-8,'+10% '+t('velShort'),'#ff6600');}
       if(!permDouble && sc>=200 && scoreMilestone<2){scoreMilestone=2;addMsg(W/2,H/2-8,'+20% '+t('velShort'),'#ff6600');}
       if(!permDouble && sc>=300 && scoreMilestone<3){scoreMilestone=3;addMsg(W/2,H/2-8,'+30% '+t('velShort'),'#ff6600');}
       if(!permDouble && sc>=400 && scoreMilestone<4){scoreMilestone=4;addMsg(W/2,H/2-8,'+40% '+t('velShort'),'#ff6600');}
-      addMsg(e.x,e.y-10,'+'+ePts,PAL.neonG);upHUD();
+      const col=e.golden?'#ffd700':wolf.ty-wolf.y>2?'#ff8800':PAL.neonG;
+      addMsg(e.x,e.y-10,'+'+ePts,col);upHUD();
     } else if(e.x<PLAY_X-4||e.x>W-CAGE_W+4){
       eggs.splice(i,1);
     } else if(e.y>GND-2){
@@ -1210,14 +1219,20 @@ function drawEggs(){
         ct.fill();
         ct.globalAlpha=1;
       });
-      const eg=ct.createRadialGradient(e.x-1.5,e.y-2.5,1,e.x,e.y,6);
-      eg.addColorStop(0,'#fffde8');
-      eg.addColorStop(0.3,PAL.eggShell);
-      eg.addColorStop(1,PAL.eggShad);
-      ct.fillStyle=eg;
+      if(e.golden){
+        ct.shadowBlur=18;ct.shadowColor='#ffd700';
+        const gg=ct.createRadialGradient(e.x-2,e.y-3,1,e.x,e.y,8);
+        gg.addColorStop(0,'#fff8dc');gg.addColorStop(0.4,'#ffd700');gg.addColorStop(1,'#b8860b');
+        ct.fillStyle=gg;
+      }else{
+        const eg=ct.createRadialGradient(e.x-1.5,e.y-2.5,1,e.x,e.y,6);
+        eg.addColorStop(0,'#fffde8');eg.addColorStop(0.3,PAL.eggShell);eg.addColorStop(1,PAL.eggShad);
+        ct.fillStyle=eg;
+      }
       ct.beginPath();
       ct.ellipse(e.x,e.y,4,5.5,0,0,Math.PI*2);
       ct.fill();
+      ct.shadowBlur=0;
       ct.fillStyle='rgba(255,255,255,0.35)';
       ct.beginPath();
       ct.ellipse(e.x-1.5,e.y-2.5,1.5,2.2,-0.3,0,Math.PI*2);
@@ -1250,11 +1265,14 @@ function drawEggs(){
       ct.globalAlpha=1;
     } else if(e.state==='got'&&e.timer>0){
       ct.globalAlpha=e.timer/18;
-      ct.fillStyle=PAL.neonG;
+      ct.fillStyle=e.golden?'#ffd700':wolf.ty-wolf.y>2?'#ff8800':PAL.neonG;
       ct.font='700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
       ct.textAlign='center';
       ct.textBaseline='middle';
-      ct.fillText('+'+(10+e.ri*2)*lvl,e.x,e.y-8);
+      let pts=(10+e.ri*2)*lvl;
+      if(e.golden)pts*=3;
+      if(wolf.ty-wolf.y>2)pts*=2;
+      ct.fillText('+'+pts,e.x,e.y-8);
       ct.globalAlpha=1;
     }
   });
