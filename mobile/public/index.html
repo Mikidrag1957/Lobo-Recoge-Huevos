@@ -251,7 +251,7 @@ const LANG={es:{},sk:{}};
   o.pauseTxt='PAUSA';o.pauseHint='P / ESC para continuar';
   o.doubleEnd='\u00a1NORMAL!';o.levelUp='\u00a1NIVEL';o.miss='\u00a1FALLASTE!';
   o.doubleMode='\u00a1DOBLE!';o.lifeLost='\u00a1PERDISTE UNA VIDA!';o.velShort='VEL';o.pts='Pts:';o.lvlShort='Lvl:';
-  o.weapon='\u00a1ARMA DESBLOQUEADA!';o.monsterHit='+50';o.monsterMiss='-75';
+  o.weapon='\u00a1ARMA DESBLOQUEADA!';o.monsterHit='+50';o.monsterMiss='-75';o.giantEgg='\u00a1HUEVO GIGANTE! Disp\u00e1rale!';
   o.lang='Idioma';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='COMPARTIR APP';o.shareText='\u00a1Prueba Lobo Recoge Huevos! Un divertido juego de recoger huevos.';
   o.info='INFORMACI\u00d3N';o.infoHowTo='\u00bfC\u00d3MO JUGAR?';o.infoHowToTxt='Mueve al lobo con el touchpad, las flechas del teclado o el rat\u00f3n. Atrapa los huevos con la cesta. \u00a1No dejes que caigan al suelo! Tienes 3 vidas. Si fallas 3 huevos seguidos, se activa el MODO DOBLE (los huevos caen de 2 en 2 durante 5 capturas).';
   o.infoScore='PUNTUACI\u00d3N POR FILA';o.infoScoreTxt='Los huevos valen puntos seg\u00fan la altura de la gallina: 10 (arriba) a 20 (abajo) \u00d7 nivel. Las gallinas inferiores lanzan huevos m\u00e1s dif\u00edciles de recoger, \u00a1pero dan m\u00e1s puntos!';
@@ -285,7 +285,7 @@ const LANG={es:{},sk:{}};
     o.pauseTxt='PAUZA';o.pauseHint='P / ESC pre pokra\u010dovanie';
     o.doubleEnd='NORM\u00c1LNE!';o.levelUp='\u00daROVE\u0147';o.miss='TRUFE!';
     o.doubleMode='DVOJIT\u00c9!';o.lifeLost='STRATEN\u00dd \u017dIVOT!';o.velShort='R\u00ddCH';o.pts='Body:';o.lvlShort='\u00dar:';
-    o.weapon='ZBRAŇ ODOMKNUTÁ!';o.monsterHit='+50';o.monsterMiss='-75';
+    o.weapon='ZBRAŇ ODOMKNUTÁ!';o.monsterHit='+50';o.monsterMiss='-75';o.giantEgg='OBROVSKÉ VAJCE! Strie\u013eaj!';
     o.lang='Jazyk';o.langEs='Espa\u00f1ol';o.langSk='Sloven\u010dina';o.share='ZDIE\u013dA\u0164 APP';o.shareText='Vyskú\u0161aj Vlk zbiera vajcia! Zábavná hra na zbieranie vajec.';
     o.info='INFORM\u00c1CIE';o.infoHowTo='AKO HRA\u0164?';o.infoHowToTxt='Pohybuj vlkom pomocou touchpadu, \u0165ipiek na kl\u00e1vesnici alebo my\u0161i. Chytaj vajcia do ko\u0161a. Nenechaj ich spadnú\u0165 na zem! M\u00e1\u0161 3 \u017eivoty. Ak 3-kr\u00e1t po sebe netrafí\u0161, spustí sa DVOJITÝ RE\u017dIM (vajcia padajú po 2 po dobu 5 chytení).';
     o.infoScore='SKÓRE POD\u013dA RIADKU';o.infoScoreTxt='Vajcia majú hodnotu pod\u013ea v\u00fd\u0161ky sliepky: 10 (hore) a\u017e 20 (dole) × úroveň. Spodné sliepky hád\u017eu vajcia, ktoré sa \u0165a\u017ešie chytajú, ale dávajú viac bodov!';
@@ -314,6 +314,7 @@ let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lv
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
 let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0;
+let giantEgg=null,giantEggShown=false;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
 let blinkT=0,blinkOn=true,gameT=0;
@@ -786,7 +787,7 @@ function shoot(){
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -815,7 +816,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
@@ -987,6 +988,7 @@ function update(dt){
   }
 
   if(!hasGun&&sc>=1000){hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
+  if(!giantEggShown&&sc>=1500){giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};addMsg(W/2,30,t('giantEgg'),'#ffd700');beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);}
   if(hasGun){
     shootCooldown-=dt;
     if(shootCooldown<0)shootCooldown=0;
@@ -1022,6 +1024,20 @@ function update(dt){
         monsters.splice(i,1);
       }
     }
+    if(giantEgg){
+      giantEgg.y+=giantEgg.vy*dt;
+      for(let i=bullets.length-1;i>=0;i--){
+        const b=bullets[i];
+        if(Math.abs(b.x-giantEgg.x)<24&&Math.abs(b.y-giantEgg.y)<24){
+          giantEgg.hp--;bullets.splice(i,1);addSpark(b.x,b.y,true);beep(800,.06,.4,'sine');
+          if(giantEgg.hp<=0){
+            sc+=250;if(sc>hi)hi=sc;addMsg(giantEgg.x,giantEgg.y,'+250 Bonus!','#ffd700');upHUD();giantEgg=null;beep(600,.1,.5,'sine');setTimeout(()=>beep(900,.15,.6,'sine'),100);setTimeout(()=>beep(1200,.2,.7,'sine'),200);
+          }
+          break;
+        }
+      }
+      if(giantEgg&&giantEgg.y>GND+10){giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');}
+    }
   }
   sparks.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.04*dt;p.life-=.055*dt;});
   sparks=sparks.filter(p=>p.life>0);
@@ -1039,6 +1055,7 @@ function render(){
   drawCage(W-CAGE_W,true);
   drawEggs();
   drawBullets();
+  drawGiantEgg();
   drawMonsters();
   drawSparks();
   drawFlames();
@@ -1350,6 +1367,26 @@ function drawEggs(){
       ct.globalAlpha=1;
     }
   });
+}
+
+function drawGiantEgg(){
+  if(!giantEgg)return;
+  const e=giantEgg;
+  const s=5;
+  ct.shadowBlur=24;ct.shadowColor='#ffd700';
+  const gg=ct.createRadialGradient(e.x-6,e.y-10,4,e.x,e.y,10*s);
+  gg.addColorStop(0,'#fff8dc');gg.addColorStop(0.3,'#ffd700');gg.addColorStop(0.7,'#daa520');gg.addColorStop(1,'#8b6508');
+  ct.fillStyle=gg;
+  ct.beginPath();
+  ct.ellipse(e.x,e.y,4*s,5.5*s,0,0,Math.PI*2);
+  ct.fill();
+  ct.shadowBlur=0;
+  ct.fillStyle='rgba(255,255,200,0.25)';
+  ct.beginPath();
+  ct.ellipse(e.x-5,e.y-10,2*s,3*s,-0.3,0,Math.PI*2);
+  ct.fill();
+  ct.fillStyle='#fff';ct.font='700 9px sans-serif';ct.textAlign='center';ct.textBaseline='bottom';
+  ct.fillText('HP:'+e.hp,e.x,e.y+6*s+4);
 }
 
 function drawBullets(){
