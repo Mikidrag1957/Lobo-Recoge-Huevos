@@ -25,8 +25,8 @@ html,body{background:linear-gradient(135deg,#0c0c1a,#1a1a2e);display:flex;align-
 .abtn.grn{border-color:rgba(68,200,68,.4);color:#44dd88}
 .abtn.grn:hover{background:rgba(68,200,68,.15);border-color:rgba(68,200,68,.6)}
 #lvl-sel{background:rgba(255,255,255,.06);color:#e0e8f0;border:1px solid rgba(255,255,255,.1);font-family:inherit;font-size:11px;padding:6px 10px;cursor:pointer;border-radius:8px;outline:none}
-canvas{display:block;width:100%;border-radius:0}
-#touchpad{width:80%;margin:0 auto;aspect-ratio:340/165;background:rgba(255,255,255,.06);border:6px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;position:relative;touch-action:none;cursor:default;box-shadow:inset 0 0 12px rgba(255,255,255,.05)}
+  canvas{display:block;width:100%;border-radius:0}
+  #touchpad{width:80%;margin:0 auto;aspect-ratio:340/165;background:rgba(255,255,255,.06);border:6px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;position:relative;touch-action:none;cursor:default;box-shadow:inset 0 0 12px rgba(255,255,255,.05)}
 #splash-overlay{position:absolute;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0a14;transition:opacity .6s;pointer-events:auto;gap:12px;padding:20px}
 #splash-overlay.hidden{opacity:0;pointer-events:none}
 #splash-overlay img{width:auto;height:60%;max-height:260px;object-fit:contain}
@@ -144,8 +144,6 @@ canvas{display:block;width:100%;border-radius:0}
       <div class="info-txt" data-lk="infoDoubleTxt"></div>
       <div class="sec-title" data-lk="infoMonster"></div>
       <div class="info-txt" data-lk="infoMonsterTxt"></div>
-      <div class="sec-title" data-lk="infoWeapon"></div>
-      <div class="info-txt" data-lk="infoWeaponTxt"></div>
     </div>
   </div>
 </div>
@@ -258,8 +256,7 @@ const LANG={es:{},sk:{}};
   o.infoGolden='HUEVOS DORADOS';o.infoGoldenTxt='Cada 20 huevos aparece uno DORADO: 40% m\u00e1s r\u00e1pido, brillo \u00fanico y \u00a1puntos \u00d73!';
   o.infoDown='ATRAPAR BAJANDO';o.infoDownTxt='Si atrapas un huevo mientras el lobo baja, obtienes puntos \u00d72. \u00a1Comb\u00ednalo con el huevo dorado para conseguir \u00d76!';
   o.infoDouble='MODO DOBLE';o.infoDoubleTxt='Al alcanzar 500 puntos entras en MODO PERMANENTE = Nivel +1 y huevos en parejas (25% m\u00e1s lentos). Tambi\u00e9n se activa si fallas 3 huevos seguidos (temporal: 5 atrapadas y vuelve a normal). Cada 100 puntos: +10% velocidad (hasta +40%).';
-  o.infoMonster='MONSTRUOS "COCOS"';o.infoMonsterTxt='Aparecen al desbloquear el arma. Caen desde arriba como fantasmas. Si el lobo salta sobre uno (tocarlo desde arriba mientras baja): +50 puntos. Si llegan al suelo: -20 puntos. Puedes dispararles con la tecla Z, ESPACIO, click o tap.';
-  o.infoWeapon='ARMA / TRUCO';o.infoWeaponTxt='El arma se desbloquea al alcanzar 1000 puntos. TRUCO SECRETO: estando en PAUSA, pulsa 3 veces sobre "VIDAS" para desbloquear el arma inmediatamente.';
+  o.infoMonster='MONSTRUOS "COCOS"';o.infoMonsterTxt='Aparecen a los 1000 puntos. Caen desde arriba como fantasmas. Si el lobo salta sobre uno: +50 puntos. Si llegan al suelo: -20 puntos. Las balas tambi\u00e9n destruyen huevos por 5 puntos \u2014 \u00a1m\u00e1s f\u00e1cil que atraparlos!';
 });
 ['es','sk'].forEach(l=>{
   if(l==='sk'){
@@ -292,8 +289,7 @@ const LANG={es:{},sk:{}};
     o.infoGolden='ZLATÉ VAJCIA';o.infoGoldenTxt='Ka\u017edé 20. vajce je ZLATÉ: o 40% rýchlejšie, jedine\u010dný lesk a body ×3!';
     o.infoDown='CHYTENIE ZHORA';o.infoDownTxt='Ak chytí\u0161 vajce, keï vlk klesá, získavate body ×2. Skombinuj so zlatým vajcom a získaj a\u017e ×6 bodov!';
     o.infoDouble='DVOJITÝ RE\u017dIM';o.infoDoubleTxt='Po dosiahnutí 500 bodov vstúpi\u0161 do TRVALÉHO RE\u017dIMU = Úroveň +1 a vajcia v pároch (o 25% pomalšie). Spustí sa aj po 3 netrafených vajciach v rade (do\u010dasn\u00fd: 5 chytení a vráti sa do normálu). Ka\u017edých 100 bodov: +10% rýchlosť (a\u017e +40%).';
-    o.infoMonster='PRÍ\u0162ERY "KOKOS"';o.infoMonsterTxt='Objavia sa po odomknutí zbrane. Padajú zhora ako duchovia. Ak na neho vlk skoèí zhora (dotyk zhora pri klesaní): +50 bodov. Ak dosiahne zem: -20 bodov. Mô\u017eeš na ne strie\u013eať klávesou Z, MEDZERNÍKOM, kliknutím alebo tapnutím.';
-    o.infoWeapon='ZBRAŇ / TRIK';o.infoWeaponTxt='Zbraň sa odomkne po dosiahnutí 1000 bodov. TAJNÝ TRIK: po\u010das PAUZY klikni 3-krát na "ŽIVOTY" pre okam\u017eité odomknutie zbrane.';
+    o.infoMonster='PRÍŠERY "KOKOS"';o.infoMonsterTxt='Objavia sa po dosiahnutí 1000 bodov. Padajú zhora ako duchovia. Ak na neho vlk skočí zhora: +50 bodov. Ak dosiahne zem: -20 bodov. Guľky tiež ničia vajcia za 5 bodov — ľahšie ako chytať!';
   }
 });
 var lang='es';
@@ -313,7 +309,7 @@ function applyLang(){
 let state='title',sc=0,hi=0,lives=3,bonusLives=0,broken=0,consecutiveBroken=0,lvl=1,eggCount=0,streak=0;
 let eggs=[],sparks=[],msgs=[],flames=[],bullets=[],monsters=[];
 let wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
-let doubleMode=false,catchInDouble=0,permDouble=false,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0,invincibleT=0,flashT=0;
+let doubleMode=false,catchInDouble=0,permDouble=false,doubleSlowFactor=0.6,scoreMilestone=0,hasGun=false,monsterSpawnT=0,shootCooldown=0,invincibleT=0,flashT=0;
 let giantEgg=null,giantEggShown=false,chickenTap=0;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
@@ -699,13 +695,28 @@ cv.addEventListener('click',e=>{
       addMsg(cx,ry-20,'!'+chickenTap+'/3','#ffd700');
       beep(880,.06,.3,'sine');
       if(chickenTap>=3){
-        chickenTap=0;hasGun=true;giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};monsterSpawnT=0;
-        addMsg(W/2,30,t('giantEgg'),'#ffd700');
-        beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);
+        chickenTap=0;hasGun=true;spawnGiantEgg();
       }
     }
   }
 });
+cv.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();
+  if(state==='paused'&&!giantEggShown){
+    const t=e.touches[0],r=cv.getBoundingClientRect(),sx=W/r.width,sy=H/r.height;
+    const cx=(t.clientX-r.left)*sx,cy=(t.clientY-r.top)*sy;
+    const ry=ROWS[5];
+    if(cy>ry-14&&cy<ry+18&&((cx>=0&&cx<CAGE_W)||(cx>W-CAGE_W&&cx<=W))){
+      chickenTap++;
+      const side=cx<W/2?'L':'R';
+      chickenSway[side+5]={t:30,m:30};
+      addMsg(cx,ry-20,'!'+chickenTap+'/3','#ffd700');
+      beep(880,.06,.3,'sine');
+      if(chickenTap>=3){chickenTap=0;hasGun=true;spawnGiantEgg();}
+    }
+  }
+},{passive:false});
 
 // Touchpad control
 const touchpad=document.getElementById('touchpad');
@@ -801,14 +812,32 @@ function sfxGameOver(){[220,196,174,165,146].forEach((f,i)=>setTimeout(()=>beep(
 
 function shoot(){
   const bx=wolf.x+(wolf.face>0?9:-9);
-  bullets.push({x:bx,y:wolf.y-10,vy:-3.2,life:1});
-  shootCooldown=4;
-  beep(1200,.06,.3,'square');
+  for(let i=-1;i<=1;i++){
+    bullets.push({x:bx+i*7,y:wolf.y-10,vy:-4,life:99});
+  }
+  shootCooldown=7;
+  beep(600,.04,.25,'square');setTimeout(()=>beep(900,.04,.2,'square'),25);setTimeout(()=>beep(1200,.06,.15,'square'),50);
+}
+function spawnGiantEgg(){
+  if(giantEgg)return;
+  giantEggShown=true;
+  const CS=4,COLS=19,ROWS=7,halfW=COLS*CS/2,halfH=ROWS*CS/2;
+  const grid=[];
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const dx=(c-(COLS-1)/2)*CS,dy=(r-(ROWS-1)/2)*CS;
+      grid.push((dx*dx)/(halfW*halfW)+(dy*dy)/(halfH*halfH)<=1);
+    }
+  }
+  giantEgg={x:W/2,y:-30,vy:0.3,CS,COLS,ROWS,grid,total:grid.filter(v=>v).length};
+  eggs=[];monsters=[];bullets=[];
+  addMsg(W/2,30,t('giantEgg'),'#ffd700');
+  beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);
 }
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;invincibleT=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;doubleSlowFactor=0.6;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;invincibleT=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -837,7 +866,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;invincibleT=0;flashT=0;
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;invincibleT=0;flashT=0;doubleSlowFactor=0.6;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
@@ -912,7 +941,8 @@ function spawnEgg(){
   let spd=cfg.spd*(0.75+Math.random()*.5)*spdMul;
   const golden=eggCount%20===0;
   if(golden)spd*=1.4;
-  if(doubleMode)spd*=0.75;
+  if(hasGun&&!giantEggShown)spd*=0.8;
+  else if(doubleMode||permDouble)spd*=doubleSlowFactor;
   const vx=fromLeft?spd:-spd;
   const vy=(Math.random()-.5)*spd*.25;
   const sx=fromLeft?CAGE_W-1:W-CAGE_W+1;
@@ -950,10 +980,13 @@ function update(dt){
   if(touchpadUsed && !touchActive){wolf.ty+=(GND-18-wolf.ty)*0.25*dt;}
   if(dy<-2){addFlame(wolf.x,wolf.y+20);}
 
-  spawnT-=dt;
-  if(spawnT<=0){
-    if(doubleMode||permDouble){spawnEgg();spawnEgg();}else{spawnEgg();}
-    spawnT=cfg.spawnLo+Math.random()*(cfg.spawnHi-cfg.spawnLo);
+  if(!giantEgg){
+    spawnT-=dt;
+    if(spawnT<=0){
+      const monsterPhase=hasGun&&!giantEggShown;
+      if((doubleMode||permDouble)&&!monsterPhase){spawnEgg();spawnEgg();}else{spawnEgg();}
+      spawnT=cfg.spawnLo+Math.random()*(cfg.spawnHi-cfg.spawnLo);
+    }
   }
 
   for(let i=eggs.length-1;i>=0;i--){
@@ -971,11 +1004,12 @@ function update(dt){
       if(streak===10){sc+=80;addMsg(e.x,e.y-28,'Streak x10 +80','#44ddff');beep(880,.08,.5,'sine');}
       if(streak===20){sc+=200;addMsg(e.x,e.y-28,'Streak x20 +200','#44ddff');beep(1100,.1,.6,'sine');}
       if(doubleMode){catchInDouble++;if(catchInDouble>=5){doubleMode=false;catchInDouble=0;addMsg(W/2,H/2-8,t('doubleEnd'),'#aaa');}}
+      if(doubleMode||permDouble)doubleSlowFactor=Math.min(1,doubleSlowFactor+0.025);
       let ePts=(10+e.ri*2)*lvl;
       if(e.golden)ePts*=3;
       if(wolf.ty-wolf.y>2)ePts*=2;
       sc+=ePts;if(sc>hi)hi=sc;
-      if(!permDouble && sc>=500){permDouble=true;lvl=Math.min(lvl+1,3);doubleMode=true;scoreMilestone=0;addMsg(W/2,H/2-8,t('levelUp')+' '+lvl+'!','#ffdd00');}
+      if(!permDouble && sc>=500){permDouble=true;lvl=Math.min(lvl+1,3);doubleMode=true;doubleSlowFactor=0.6;scoreMilestone=0;addMsg(W/2,H/2-8,t('levelUp')+' '+lvl+'!','#ffdd00');}
       if(!permDouble && sc>=100 && scoreMilestone<1){scoreMilestone=1;addMsg(W/2,H/2-8,'+10% '+t('velShort'),'#ff6600');}
       if(!permDouble && sc>=200 && scoreMilestone<2){scoreMilestone=2;addMsg(W/2,H/2-8,'+20% '+t('velShort'),'#ff6600');}
       if(!permDouble && sc>=300 && scoreMilestone<3){scoreMilestone=3;addMsg(W/2,H/2-8,'+30% '+t('velShort'),'#ff6600');}
@@ -990,7 +1024,7 @@ function update(dt){
       broken++;consecutiveBroken++;streak=0;
       addMsg(e.x,GND-14,t('miss'),PAL.neonR);
       if(consecutiveBroken>=3&&!doubleMode){
-        doubleMode=true;catchInDouble=0;
+        doubleMode=true;catchInDouble=0;doubleSlowFactor=0.6;
         addMsg(W/2,H/2-8,t('doubleMode'),'#ffdd00');
       }
       if(broken>=cfg.maxBrk){
@@ -1013,26 +1047,42 @@ function update(dt){
   }
 
   if(!hasGun&&sc>=1000){hasGun=true;monsterSpawnT=0;addMsg(W/2,H/2-8,t('weapon'),'#ff00ff');beep(660,.1,.4,'square');setTimeout(()=>beep(880,.1,.4,'square'),80);}
-  if(!giantEggShown&&sc>=1500){giantEggShown=true;giantEgg={x:W/2,y:-30,hp:8,vy:0.3};addMsg(W/2,30,t('giantEgg'),'#ffd700');beep(300,.2,.5,'sawtooth');setTimeout(()=>beep(500,.2,.5,'sawtooth'),150);setTimeout(()=>beep(700,.3,.6,'sine'),300);}
+  if(!giantEggShown&&sc>=1500){spawnGiantEgg();}
   if(hasGun){
     shootCooldown-=dt;
     if(shootCooldown<0)shootCooldown=0;
-    monsterSpawnT-=dt;
-    if(monsterSpawnT<=0){
-      const mx=PLAY_X+20+Math.random()*(PLAY_W-40);
-      const spdMul=1+scoreMilestone*0.1;
-      monsters.push({x:mx,y:-10,vy:(0.8+Math.random()*0.6)*spdMul,life:1});
-      monsterSpawnT=120;
+    if(!giantEgg){
+      monsterSpawnT-=dt;
+      if(monsterSpawnT<=0){
+        const mx=PLAY_X+20+Math.random()*(PLAY_W-40);
+        const spdMul=1+scoreMilestone*0.1;
+        monsters.push({x:mx,y:-10,vy:(0.8+Math.random()*0.6)*spdMul,life:1});
+        monsterSpawnT=120;
+      }
     }
     for(let i=bullets.length-1;i>=0;i--){
       const b=bullets[i];
       b.y+=b.vy*dt;b.life-=.04*dt;
       if(b.y<-20||b.life<=0){bullets.splice(i,1);continue;}
+      let hitSomething=false;
       for(let j=monsters.length-1;j>=0;j--){
         const m=monsters[j];
         if(Math.abs(b.x-m.x)<10&&Math.abs(b.y-m.y)<10){
           addMsg(b.x,b.y-10,'+50',PAL.neonG);addSpark(b.x,b.y,true);sc+=50;if(sc>hi)hi=sc;upHUD();beep(990,.08,.5,'square');
-          monsters.splice(j,1);bullets.splice(i,1);break;
+          monsters.splice(j,1);bullets.splice(i,1);hitSomething=true;break;
+        }
+      }
+      if(!hitSomething){
+        for(let j=eggs.length-1;j>=0;j--){
+          const e=eggs[j];
+          if(e.state!=='fly')continue;
+          if(Math.abs(b.x-e.x)<8&&Math.abs(b.y-e.y)<8){
+            e.state='brk';e.timer=20;e.y=GND-4;
+            addSpark(e.x,e.y,true);sfxCatch();
+            addMsg(e.x,e.y-10,'+5',PAL.neonC);
+            sc+=5;if(sc>hi)hi=sc;upHUD();beep(660,.05,.3,'square');
+            bullets.splice(i,1);break;
+          }
         }
       }
     }
@@ -1054,15 +1104,34 @@ function update(dt){
     giantEgg.y+=giantEgg.vy*dt;
     for(let i=bullets.length-1;i>=0;i--){
       const b=bullets[i];
-      if(Math.abs(b.x-giantEgg.x)<24&&Math.abs(b.y-giantEgg.y)<24){
-        giantEgg.hp--;bullets.splice(i,1);addSpark(b.x,b.y,true);beep(800,.06,.4,'sine');
-        if(giantEgg.hp<=0){
-          sc+=250;if(sc>hi)hi=sc;addMsg(giantEgg.x,giantEgg.y,'+250 Bonus!','#ffd700');upHUD();giantEgg=null;beep(600,.1,.5,'sine');setTimeout(()=>beep(900,.15,.6,'sine'),100);setTimeout(()=>beep(1200,.2,.7,'sine'),200);
+      if(b.y<-20||b.life<=0){bullets.splice(i,1);continue;}
+      const rx=b.x-giantEgg.x,ry=b.y-giantEgg.y;
+      const halfW=giantEgg.COLS*giantEgg.CS/2,halfH=giantEgg.ROWS*giantEgg.CS/2;
+      if(Math.abs(rx)<halfW+4&&Math.abs(ry)<halfH+4){
+        const cc=Math.round((rx)/giantEgg.CS+(giantEgg.COLS-1)/2);
+        const cr=Math.round((ry)/giantEgg.CS+(giantEgg.ROWS-1)/2);
+        let hit=false;
+        for(let dr=-1;dr<=1;dr++){
+          for(let dc=-1;dc<=1;dc++){
+            const nc=cc+dc,nr=cr+dr;
+            if(nc>=0&&nc<giantEgg.COLS&&nr>=0&&nr<giantEgg.ROWS){
+              const idx=nr*giantEgg.COLS+nc;
+              if(giantEgg.grid[idx]){giantEgg.grid[idx]=false;hit=true;}
+            }
+          }
         }
-        break;
+        if(hit){addSpark(b.x,b.y,true);beep(800,.06,.4,'sine');bullets.splice(i,1);}
       }
     }
-    if(giantEgg&&giantEgg.y>GND+10){giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');}
+    const alive=giantEgg.grid.filter(v=>v).length;
+    if(alive<=0){
+      sc+=250;if(sc>hi)hi=sc;
+      addMsg(giantEgg.x,giantEgg.y,'+250 Bonus!','#ffd700');
+      upHUD();giantEgg=null;if(permDouble){doubleSlowFactor=0.6;addMsg(W/2,40,t('double'),PAL.neonC);}
+      beep(600,.1,.5,'sine');setTimeout(()=>beep(900,.15,.6,'sine'),100);setTimeout(()=>beep(1200,.2,.7,'sine'),200);
+    }else if(giantEgg.y>GND+10){
+      giantEgg=null;addMsg(W/2,GND-20,'Giant egg missed!','#ff4444');if(permDouble){doubleSlowFactor=0.6;addMsg(W/2,40,t('double'),PAL.neonC);}
+    }
   }
   if(invincibleT>0)invincibleT-=dt;
   if(flashT>0)flashT-=dt;
@@ -1400,31 +1469,36 @@ function drawEggs(){
 function drawGiantEgg(){
   if(!giantEgg)return;
   const e=giantEgg;
-  const s=5;
   ct.shadowBlur=24;ct.shadowColor='#ffd700';
-  const gg=ct.createRadialGradient(e.x-6,e.y-10,4,e.x,e.y,10*s);
-  gg.addColorStop(0,'#fff8dc');gg.addColorStop(0.3,'#ffd700');gg.addColorStop(0.7,'#daa520');gg.addColorStop(1,'#8b6508');
-  ct.fillStyle=gg;
-  ct.beginPath();
-  ct.ellipse(e.x,e.y,4*s,5.5*s,0,0,Math.PI*2);
-  ct.fill();
+  let alive=0;
+  for(let r=0;r<e.ROWS;r++){
+    for(let c=0;c<e.COLS;c++){
+      if(!e.grid[r*e.COLS+c])continue;
+      alive++;
+      const dx=e.x+(c-(e.COLS-1)/2)*e.CS;
+      const dy=e.y+(r-(e.ROWS-1)/2)*e.CS;
+      ct.fillStyle='#ffd700';
+      ct.fillRect(dx-e.CS/2+1,dy-e.CS/2+1,e.CS-2,e.CS-2);
+      ct.fillStyle='rgba(255,255,200,0.3)';
+      ct.fillRect(dx-e.CS/2+2,dy-e.CS/2+2,e.CS-4,e.CS-4);
+    }
+  }
   ct.shadowBlur=0;
-  ct.fillStyle='rgba(255,255,200,0.25)';
-  ct.beginPath();
-  ct.ellipse(e.x-5,e.y-10,2*s,3*s,-0.3,0,Math.PI*2);
-  ct.fill();
-  ct.fillStyle='#fff';ct.font='700 9px sans-serif';ct.textAlign='center';ct.textBaseline='bottom';
-  ct.fillText('HP:'+e.hp,e.x,e.y+6*s+4);
+  if(alive>0){
+    ct.fillStyle='#fff';ct.font='700 9px sans-serif';ct.textAlign='center';ct.textBaseline='bottom';
+    ct.fillText(alive+'/'+e.total,e.x,e.y-e.ROWS*e.CS/2-4);
+  }
 }
 
 function drawBullets(){
   bullets.forEach(b=>{
-    const g=ct.createRadialGradient(b.x,b.y,1,b.x,b.y,6);
-    g.addColorStop(0,'#fff');g.addColorStop(0.3,'#ffff44');g.addColorStop(1,'rgba(255,200,0,0)');
+    ct.shadowBlur=12;ct.shadowColor='#44eeff';
+    const g=ct.createRadialGradient(b.x-1,b.y-4,1,b.x,b.y,8);
+    g.addColorStop(0,'#fff');g.addColorStop(0.2,'#88eeff');g.addColorStop(0.6,'#4488ff');g.addColorStop(1,'rgba(0,80,255,0)');
     ct.globalAlpha=Math.max(0,b.life);
-    ct.fillStyle=g;ct.beginPath();ct.arc(b.x,b.y,6,0,Math.PI*2);ct.fill();
-    ct.fillStyle='#ffdd00';ct.beginPath();ct.arc(b.x,b.y,2.5,0,Math.PI*2);ct.fill();
-    ct.globalAlpha=1;
+    ct.fillStyle=g;ct.beginPath();ct.ellipse(b.x,b.y,3,6,0,0,Math.PI*2);ct.fill();
+    ct.fillStyle='#ccffff';ct.beginPath();ct.ellipse(b.x,b.y-1,1.5,3,0,0,Math.PI*2);ct.fill();
+    ct.shadowBlur=0;ct.globalAlpha=1;
   });
 }
 function drawMonsters(){
