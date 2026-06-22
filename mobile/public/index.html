@@ -1076,10 +1076,10 @@ function update(dt){
         for(let j=eggs.length-1;j>=0;j--){
           const e=eggs[j];
           if(e.state!=='fly')continue;
-          if(Math.abs(b.x-e.x)<8&&Math.abs(b.y-e.y)<8){
-            e.state='brk';e.timer=20;e.y=GND-4;
-            addSpark(e.x,e.y,true);sfxCatch();
-            addMsg(e.x,e.y-10,'+5',PAL.neonC);
+          if(Math.abs(b.x-e.x)<10&&Math.abs(b.y-e.y)<10){
+            e.state='shot';e.timer=22;e.vx=0;e.vy=0;
+            addSpark(e.x,e.y,true);addSpark(e.x,e.y,true);sfxCatch();
+            addMsg(e.x,e.y-12,'+5',PAL.neonC);
             sc+=5;if(sc>hi)hi=sc;upHUD();beep(660,.05,.3,'square');
             bullets.splice(i,1);break;
           }
@@ -1425,6 +1425,19 @@ function drawEggs(){
       ct.beginPath();
       ct.ellipse(e.x-1.5,e.y-2.5,1.5,2.2,-0.3,0,Math.PI*2);
       ct.fill();
+    } else if(e.state==='shot'&&e.timer>0){
+      const p=1-e.timer/22;
+      const sz=4+p*8;
+      ct.globalAlpha=Math.max(0,e.timer/22);
+      const sg=ct.createRadialGradient(e.x,e.y,0,e.x,e.y,sz);
+      sg.addColorStop(0,'rgba(0,238,255,0.9)');sg.addColorStop(0.3,'rgba(0,200,255,0.5)');sg.addColorStop(1,'rgba(0,150,255,0)');
+      ct.fillStyle=sg;ct.beginPath();ct.arc(e.x,e.y,sz,0,Math.PI*2);ct.fill();
+      ct.fillStyle='#fff';ct.beginPath();ct.arc(e.x,e.y,sz*0.3,0,Math.PI*2);ct.fill();
+      if(e.golden){ct.shadowBlur=12;ct.shadowColor='#ffd700';}
+      ct.fillStyle=e.golden?'#ffd700':PAL.eggShell;
+      const r=4*(1-p*0.7);
+      ct.beginPath();ct.ellipse(e.x,e.y,r,r*1.2,0,0,Math.PI*2);ct.fill();
+      ct.shadowBlur=0;ct.globalAlpha=1;
     } else if(e.state==='brk'&&e.timer>0){
       ct.globalAlpha=Math.min(1,e.timer/12);
       ct.fillStyle=PAL.eggShell;
