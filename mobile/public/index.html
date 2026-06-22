@@ -1062,12 +1062,13 @@ function update(dt){
     }
     for(let i=bullets.length-1;i>=0;i--){
       const b=bullets[i];
+      const prevY=b.y;
       b.y+=b.vy*dt;b.life-=.04*dt;
       if(b.y<-20||b.life<=0){bullets.splice(i,1);continue;}
       let hitSomething=false;
       for(let j=monsters.length-1;j>=0;j--){
         const m=monsters[j];
-        if(Math.abs(b.x-m.x)<10&&Math.abs(b.y-m.y)<10){
+        if(Math.abs(b.x-m.x)<12&&Math.abs(b.y-m.y)<12){
           addMsg(b.x,b.y-10,'+50',PAL.neonG);addSpark(b.x,b.y,true);sc+=50;if(sc>hi)hi=sc;upHUD();beep(990,.08,.5,'square');
           monsters.splice(j,1);bullets.splice(i,1);hitSomething=true;break;
         }
@@ -1076,12 +1077,16 @@ function update(dt){
         for(let j=eggs.length-1;j>=0;j--){
           const e=eggs[j];
           if(e.state!=='fly')continue;
-          if(Math.abs(b.x-e.x)<10&&Math.abs(b.y-e.y)<10){
-            e.state='shot';e.timer=22;e.vx=0;e.vy=0;
-            addSpark(e.x,e.y,true);addSpark(e.x,e.y,true);sfxCatch();
-            addMsg(e.x,e.y-12,'+5',PAL.neonC);
-            sc+=5;if(sc>hi)hi=sc;upHUD();beep(660,.05,.3,'square');
-            bullets.splice(i,1);break;
+          const dx=Math.abs(b.x-e.x);
+          if(dx<14){
+            const yMin=Math.min(prevY,b.y),yMax=Math.max(prevY,b.y);
+            if(e.y>=yMin-6&&e.y<=yMax+6){
+              e.state='shot';e.timer=22;e.vx=0;e.vy=0;
+              addSpark(e.x,e.y,true);addSpark(e.x,e.y,true);sfxCatch();
+              addMsg(e.x,e.y-12,'+5',PAL.neonC);
+              sc+=5;if(sc>hi)hi=sc;upHUD();beep(660,.05,.3,'square');
+              bullets.splice(i,1);break;
+            }
           }
         }
       }
