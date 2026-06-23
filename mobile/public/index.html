@@ -1062,7 +1062,7 @@ function update(dt){
   if(hasGun){
     shootCooldown-=dt;
     if(shootCooldown<0)shootCooldown=0;
-    if(autoFire&&touchActive&&shootCooldown<=0)shoot();
+    if(autoFire&&shootCooldown<=0)shoot();
     if(!giantEgg){
       monsterSpawnT-=dt;
       if(monsterSpawnT<=0){
