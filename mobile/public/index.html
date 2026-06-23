@@ -314,6 +314,7 @@ let giantEgg=null,giantEggShown=false,chickenTap=0;
 let chickenSway={};
 let keys={},spawnT=0,lt=0,raf=null;
 let blinkT=0,blinkOn=true,gameT=0;
+let playerTap=0,autoFire=false,cheatAutoFire=false,lastTapTime=0;
 
 const PAL={
   bg:'#0a0a14',cage:'#0d0b08',bar:'#6b5535',wire:'#554433',
@@ -667,6 +668,13 @@ function checkLivesTap(){
 }
 document.getElementById('lives-disp').addEventListener('click',checkLivesTap);
 document.getElementById('lives-disp').addEventListener('touchstart',e=>{e.stopPropagation();checkLivesTap();},{passive:true});
+function checkPlayerTap(){
+  if(state!=='paused')return;
+  playerTap++;addMsg(W/2,H/2-4,'!'+playerTap+'/3','#00ffff');beep(660,.06,.3,'sine');
+  if(playerTap>=3){playerTap=0;cheatAutoFire=true;spawnGiantEgg();addMsg(W/2,H/2-16,'¡Auto-Fire! Doble toque touchpad','#00ffaa');beep(880,.1,.4,'square');}
+}
+document.getElementById('hScoreLabel').addEventListener('click',checkPlayerTap);
+document.getElementById('hScoreLabel').addEventListener('touchstart',e=>{e.stopPropagation();checkPlayerTap();},{passive:true});
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();
@@ -745,6 +753,9 @@ touchpad.addEventListener('touchstart',function(e){
   const t=e.touches[0];
   updateWolfFromTouch(t.clientX,t.clientY);
   touchDot.style.opacity='1';
+  const now=Date.now();
+  if(cheatAutoFire&&now-lastTapTime>0&&now-lastTapTime<350){autoFire=!autoFire;addMsg(W/2,30,autoFire?'Auto-Fire ON':'Auto-Fire OFF',autoFire?'#44ff88':'#ff8844');}
+  lastTapTime=now;
   if(state==='playing'&&hasGun&&shootCooldown<=0)shoot();
 },{passive:false});
 
@@ -837,7 +848,7 @@ function spawnGiantEgg(){
 function startGame(){
   sfxStart();
   lvl=+document.getElementById('lvl-sel').value;
-  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;doubleSlowFactor=0.6;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;invincibleT=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;
+  sc=0;broken=0;consecutiveBroken=0;lives=3;bonusLives=0;doubleMode=false;catchInDouble=0;permDouble=false;doubleSlowFactor=0.6;scoreMilestone=0;hasGun=false;monsterSpawnT=0;shootCooldown=0;invincibleT=0;livesTap=0;chickenSway={};giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;playerTap=0;autoFire=false;cheatAutoFire=false;
   eggs=[];sparks=[];msgs=[];flames=[];bullets=[];monsters=[];
   spawnT=0;lt=0;gameT=0;blinkT=0;
   wolf={x:W/2,y:GND-20,tx:W/2,ty:GND-20,face:1,bobT:0};
@@ -866,7 +877,7 @@ function quitGame(){
   if(state==='title')return;
   state='title';
   cancelAnimationFrame(raf);
-  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;invincibleT=0;flashT=0;doubleSlowFactor=0.6;
+  eggs=[];sparks=[];msgs=[];bullets=[];monsters=[];hasGun=false;giantEgg=null;giantEggShown=false;chickenTap=0;streak=0;invincibleT=0;flashT=0;doubleSlowFactor=0.6;playerTap=0;autoFire=false;cheatAutoFire=false;
   document.getElementById('bP').disabled=true;
   document.getElementById('bP').textContent=t('pause');
   if(sc>hi)hi=sc;
@@ -1051,6 +1062,7 @@ function update(dt){
   if(hasGun){
     shootCooldown-=dt;
     if(shootCooldown<0)shootCooldown=0;
+    if(autoFire&&touchActive&&shootCooldown<=0)shoot();
     if(!giantEgg){
       monsterSpawnT-=dt;
       if(monsterSpawnT<=0){
